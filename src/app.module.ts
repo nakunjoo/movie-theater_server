@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MySqlConfigService } from './configs/db/config.service';
-import { MySqlConfigModule } from './configs/db/config.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+
+// controller
+
+// module
+import { MySqlConfigModule } from './configs/db/config.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+
+// service
+import { MySqlConfigService } from './configs/db/config.service';
 
 @Module({
   imports: [
@@ -23,8 +29,8 @@ import * as Joi from 'joi';
       useClass: MySqlConfigService,
       inject: [MySqlConfigService],
     }),
+    AuthModule,
+    AdminModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
