@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class LoginStrategy extends PassportStrategy(Strategy) {
+export class AdminLoginStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
       usernameField: 'account_name',

@@ -21,7 +21,7 @@ import {
 
 import express, { Request, Response } from 'express';
 import RequestWithAdmin from 'src/auth/requestWithAdmin.interface';
-import { LoginAuthenticationGuard } from 'src/auth/guards/loginAuth.guard';
+import { AdminLoginAuthenticationGuard } from 'src/auth/guards/adminLoginAuth.guard';
 
 // service
 import { AdminService } from './admin.service';

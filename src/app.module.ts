@@ -9,6 +9,7 @@ import { MySqlConfigModule } from './configs/db/config.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { TheaterModule } from './theater/theater.module';
 
 // service
 import { MySqlConfigService } from './configs/db/config.service';
@@ -31,6 +32,7 @@ import { MySqlConfigService } from './configs/db/config.service';
     }),
     AuthModule,
     AdminModule,
+    TheaterModule,
   ],
 })
 export class AppModule {}

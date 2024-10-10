@@ -41,12 +41,12 @@ export class Theaters extends BaseEntity {
   type: string;
 
   @Column({
-    name: 'nubmer_seats',
+    name: 'number_seats',
     type: 'int',
     default: 0,
     comment: '좌석수',
   })
-  nubmer_seats: number;
+  number_seats: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

@@ -21,7 +21,7 @@ import {
 
 import express, { Request, Response } from 'express';
 import RequestWithAdmin from './requestWithAdmin.interface';
-import { LoginAuthenticationGuard } from './guards/loginAuth.guard';
+import { AdminLoginAuthenticationGuard } from './guards/adminLoginAuth.guard';
 
 // service
 import { AuthService } from './auth.service';
@@ -50,7 +50,7 @@ export class AuthController {
     },
   })
   @Post('/login')
-  @UseGuards(LoginAuthenticationGuard)
+  @UseGuards(AdminLoginAuthenticationGuard)
   @UsePipes(ValidationPipe)
   @ApiBody({
     schema: {

@@ -6,7 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { LoginStrategy } from './strategies/login.strategy';
+import { AdminLoginStrategy } from './strategies/adminLogin.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { TypeOrmExModule } from 'src/utils/typeorm-ex.module';
@@ -30,7 +30,7 @@ import { AdminRepository } from 'src/repository/admin.repository';
     }),
     TypeOrmExModule.forCustomRepository([AdminRepository]),
   ],
-  providers: [AuthService, LoginStrategy, JwtStrategy],
+  providers: [AuthService, AdminLoginStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
