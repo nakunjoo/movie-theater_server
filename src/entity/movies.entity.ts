@@ -64,6 +64,14 @@ export class Movies extends BaseEntity {
   showtime: number;
 
   @Column({
+    name: 'img_url',
+    type: 'varchar',
+    length: 5000,
+    comment: '이미지 url',
+  })
+  img_url: string;
+
+  @Column({
     name: 'status',
     type: 'varchar',
     length: 50,
