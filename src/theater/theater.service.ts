@@ -172,4 +172,32 @@ export class TheaterService {
       await queryRunner.release();
     }
   }
+
+  /**
+   * @description 관리자 상영관 삭제
+   * @param theater_id 영화 고유 아이디
+   */
+
+  async deleteTheater(theater_id: string) {
+    // transaction 시작
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.softDelete(Theaters, { id: theater_id });
+
+      // transaction 종료
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      let error_text = '상영관 삭제 조회 요청 실패';
+      if (error.response) {
+        error_text = error.response.error;
+      }
+      ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
+      return false;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

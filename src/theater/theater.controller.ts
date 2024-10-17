@@ -11,6 +11,7 @@ import {
   UseGuards,
   Query,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -246,6 +247,42 @@ export class TheaterController {
   ) {
     return res.status(HttpStatus.OK).json({
       success: await this.theaterService.updateDetailTheater(theater_info),
+    });
+  }
+
+  /**
+   * @description 관리자 상영관 삭제
+   * @param movie_id 상영관 고유 아이디
+   */
+  @ApiOperation({
+    summary: '관리자 상영관 삭제',
+    description: '관리자 상영관 삭제',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'theater_id',
+    required: true,
+    description: '영화 고유 아이디',
+  })
+  @Delete('/delete')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
+  @UsePipes(ValidationPipe)
+  async deleteTheater(
+    @Query('theater_id') theater_id: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: await this.theaterService.deleteTheater(theater_id),
     });
   }
 }

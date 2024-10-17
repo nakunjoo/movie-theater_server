@@ -198,4 +198,44 @@ export class MovieService {
       await queryRunner.release();
     }
   }
+
+  /**
+   * @description 관리자 영화 삭제
+   * @param movie_id 영화 고유 아이디
+   */
+
+  async deleteMovie(movie_id: string) {
+    // transaction 시작
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const movie = await queryRunner.manager.findOne(Movies, {
+        where: {
+          id: movie_id,
+        },
+      });
+
+      const fileCheck = fs.existsSync(
+        `${process.cwd()}/uploads/${movie.img_url}`,
+      );
+      if (fileCheck) {
+        fs.unlinkSync(`${process.cwd()}/uploads/${movie.img_url}`);
+      }
+      await queryRunner.manager.softDelete(Movies, { id: movie_id });
+
+      // transaction 종료
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      let error_text = '영화 삭제 조회 요청 실패';
+      if (error.response) {
+        error_text = error.response.error;
+      }
+      ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
+      return false;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

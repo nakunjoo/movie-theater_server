@@ -13,6 +13,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -312,6 +313,42 @@ export class MovieController {
   ) {
     return res.status(HttpStatus.OK).json({
       success: await this.movieService.updateDetailMovie(file, movie_info),
+    });
+  }
+
+  /**
+   * @description 관리자 영화 삭제
+   * @param movie_id 영화 고유 아이디
+   */
+  @ApiOperation({
+    summary: '관리자 영화 삭제',
+    description: '관리자 영화 삭제',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'movie_id',
+    required: true,
+    description: '영화 고유 아이디',
+  })
+  @Delete('/delete')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
+  @UsePipes(ValidationPipe)
+  async deleteMovie(
+    @Query('movie_id') movie_id: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: await this.movieService.deleteMovie(movie_id),
     });
   }
 }
