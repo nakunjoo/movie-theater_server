@@ -66,6 +66,7 @@ export class TheaterController {
   })
   @Get('/list')
   @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
   @UsePipes(ValidationPipe)
   async getTheaterList(@Req() req: RequestWithAdmin, @Res() res: Response) {
     return res.status(HttpStatus.OK).json({
@@ -123,6 +124,7 @@ export class TheaterController {
   })
   @Post('/create')
   @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
   @UsePipes(ValidationPipe)
   async createTheater(
     @Body() theater_info: TheaterCreateDto,
@@ -167,6 +169,7 @@ export class TheaterController {
     description: '상영관 고유 아이디',
   })
   @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
   @UsePipes(ValidationPipe)
   async getTheaterDetail(
     @Query('theater_id') theater_id: string,
@@ -234,6 +237,7 @@ export class TheaterController {
   })
   @Patch('/update_detail')
   @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
   @UsePipes(ValidationPipe)
   async updateDetailTheater(
     @Body() theater_info: TheaterUpdateDto,
