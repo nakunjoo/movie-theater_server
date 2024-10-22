@@ -97,6 +97,6 @@ export class Movies extends BaseEntity {
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt?: Date | null;
 
-  @OneToMany(() => Screening, (screening) => screening.theater_id)
+  @OneToMany(() => Screening, (screening) => screening.movie_id)
   screening: Screening;
 }

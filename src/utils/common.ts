@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as crypto from 'crypto';
-import * as dayjs from 'dayjs';
+import dayjs from './dayjs';
 
 const iv = crypto.randomBytes(16); //초기화 벡터. 더 강력한 암호화를 위해 사용. 랜덤값이 좋음
 const key = crypto.scryptSync('myprojectsSpecialKey', 'movieTheaterSalt', 32); // 나만의 암호화키. password, salt, byte 순인데 password와 salt는 본인이 원하는 문구로~
@@ -55,7 +55,7 @@ export const ErrorException = (
     {
       data,
       error,
-      timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      timestamp: dayjs().tz().format('YYYY-MM-DD HH:mm:ss'),
     },
     httpStatus,
   );
