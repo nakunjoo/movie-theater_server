@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ErrorException } from 'src/utils/common';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, Not, Between } from 'typeorm';
+import * as fs from 'fs';
 
 // repository
 import { ScreeningRepository } from 'src/repository/screening.repository';
@@ -41,6 +42,11 @@ export class ScreeningService {
             ),
           },
         },
+        order: {
+          screening: {
+            start_time: 'ASC',
+          },
+        },
       });
       const list = [];
       for (const movie of movieList) {
@@ -56,7 +62,7 @@ export class ScreeningService {
         for (const screenings of Object.values(movie.screening)) {
           const screening_data = {
             id: screenings.id,
-            king: screenings.king,
+            kind: screenings.kind,
             start_time: screenings.start_time,
             end_time: screenings.end_time,
             ready_time: screenings.ready_time,
@@ -159,6 +165,69 @@ export class ScreeningService {
         error_text = error.response.error;
       }
       ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * @description 상영영화 상세 조회
+   * @param screening_id 상영영화 고유 아이디
+   */
+
+  async getScreeningDetail(screening_id: string) {
+    try {
+      const screening = await this.screeningRepository.findOne({
+        relations: ['movie_id', 'theater_id', 'theater_id.seat'],
+        where: {
+          id: screening_id,
+        },
+      });
+      if (!screening) {
+        ErrorException(
+          HttpStatus.NOT_FOUND,
+          '존재하지않는 상영정보입니다.',
+          404,
+        );
+      }
+      const url = await fs.readFileSync(
+        `${process.cwd()}/uploads/${screening.movie_id.img_url}`,
+        'base64',
+      );
+      screening.movie_id.img_url = `data:image/jpeg;base64,${url}`;
+      screening.movie_id.genre = JSON.parse(screening.movie_id.genre);
+      return screening;
+    } catch (error) {
+      let error_text = '상영영화 상세 조회 요청 실패';
+      if (error.response) {
+        error_text = error.response.error;
+      }
+      ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
+    }
+  }
+
+  /**
+   * @description 관리자 상영영화 삭제
+   * @param screening_id 상영영화  고유 아이디
+   */
+  async deleteScreening(screening_id: string) {
+    // transaction 시작
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.softDelete(Screening, { id: screening_id });
+
+      // transaction 종료
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      let error_text = '관리자 상영영화 삭제 요청 실패';
+      if (error.response) {
+        error_text = error.response.error;
+      }
+      ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
+      return false;
     } finally {
       await queryRunner.release();
     }

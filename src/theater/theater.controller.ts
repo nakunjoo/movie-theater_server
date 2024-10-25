@@ -252,7 +252,7 @@ export class TheaterController {
 
   /**
    * @description 관리자 상영관 삭제
-   * @param movie_id 상영관 고유 아이디
+   * @param theater_id 상영관 고유 아이디
    */
   @ApiOperation({
     summary: '관리자 상영관 삭제',

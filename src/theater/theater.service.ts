@@ -190,7 +190,7 @@ export class TheaterService {
       await queryRunner.commitTransaction();
       return true;
     } catch (error) {
-      let error_text = '상영관 삭제 조회 요청 실패';
+      let error_text = '상영관 삭제 요청 실패';
       if (error.response) {
         error_text = error.response.error;
       }
