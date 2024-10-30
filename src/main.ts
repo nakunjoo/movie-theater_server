@@ -11,7 +11,10 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   let origin = [];
   if (process.env.NODE_ENV === 'production') {
-    origin = [];
+    origin = [
+      'https://movie-theater-dot-teak-banner-431004-n3.du.r.appspot.com',
+      'http://movie-theater-dot-teak-banner-431004-n3.du.r.appspot.com',
+    ];
   } else {
     origin = ['http://localhost:3030', 'http://localhost:3000'];
   }
