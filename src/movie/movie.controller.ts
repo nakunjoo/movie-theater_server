@@ -70,11 +70,14 @@ export class MovieController {
       },
     },
   })
-  @Get('/list')
+  @Get('/manager_list')
   @UseGuards(JwtAuthenticationGuard)
   @ApiBearerAuth()
   @UsePipes(ValidationPipe)
-  async getMovieList(@Req() req: RequestWithAdmin, @Res() res: Response) {
+  async getManagerMovieList(
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
     return res.status(HttpStatus.OK).json({
       success: true,
       data: await this.movieService.getMovieList(),
@@ -349,6 +352,43 @@ export class MovieController {
   ) {
     return res.status(HttpStatus.OK).json({
       success: await this.movieService.deleteMovie(movie_id),
+    });
+  }
+
+  /**
+   * @description 영화 조회
+   */
+  @ApiOperation({
+    summary: '영화 조회',
+    description: '영화 조회',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            id: '영화 고유 아이디',
+            title: '영화 명',
+            genre: '영화 장르',
+            deliberation: '영화 심의',
+            price: '가격',
+            showtime: '상영시간',
+            status: '상태값',
+            created_at: '생성일',
+            updated_at: '수정일',
+          },
+        ],
+      },
+    },
+  })
+  @Get('/list')
+  @UsePipes(ValidationPipe)
+  async getMovieList(@Req() req: RequestWithAdmin, @Res() res: Response) {
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: await this.movieService.getMovieList(),
     });
   }
 }

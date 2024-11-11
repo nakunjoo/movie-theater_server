@@ -15,7 +15,6 @@ import {
 } from 'typeorm';
 
 import { Screening } from './screening.entity';
-import { Customers } from './customers.entity';
 
 @Entity({ name: 'reservation' })
 @Unique(['id'])
@@ -48,20 +47,28 @@ export class Reservation extends BaseEntity {
   amount: number;
 
   @Column({
-    name: 'non_name',
+    name: 'name',
     type: 'varchar',
     length: 50,
     comment: '비회원고객명',
   })
-  non_name: string | null;
+  name: string | null;
 
   @Column({
-    name: 'non_phone',
+    name: 'phone',
     type: 'varchar',
     length: 50,
     comment: '비회원고객번호',
   })
-  non_phone: string | null;
+  phone: string | null;
+
+  @Column({
+    name: 'payment_price',
+    type: 'int',
+    default: 0,
+    comment: '결제금액',
+  })
+  payment_price: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -75,8 +82,4 @@ export class Reservation extends BaseEntity {
   @ManyToOne(() => Screening, (screening) => screening.id)
   @JoinColumn({ name: 'screening_id' })
   screening_id: Screening;
-
-  @ManyToOne(() => Customers, (customer) => customer.id)
-  @JoinColumn({ name: 'customer_id' })
-  customer_id: Customers;
 }

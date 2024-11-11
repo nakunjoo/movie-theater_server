@@ -67,7 +67,7 @@ export class Screening extends BaseEntity {
   deletedAt?: Date | null;
 
   @OneToMany(() => Reservation, (reservation) => reservation.screening_id)
-  reservation: Reservation;
+  reservation: Reservation[];
 
   @ManyToOne(() => Movies, (movie) => movie.id)
   @JoinColumn({ name: 'movie_id' })
@@ -76,4 +76,5 @@ export class Screening extends BaseEntity {
   @ManyToOne(() => Theaters, (theater) => theater.id)
   @JoinColumn({ name: 'theater_id' })
   theater_id: Theaters;
+  screening: Reservation[];
 }

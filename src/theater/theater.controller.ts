@@ -65,7 +65,7 @@ export class TheaterController {
       },
     },
   })
-  @Get('/list')
+  @Get('/manager_list')
   @UseGuards(JwtAuthenticationGuard)
   @ApiBearerAuth()
   @UsePipes(ValidationPipe)

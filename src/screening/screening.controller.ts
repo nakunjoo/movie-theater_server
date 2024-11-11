@@ -39,12 +39,12 @@ export class ScreeningController {
   constructor(private readonly screeningService: ScreeningService) {}
 
   /**
-   * @description 상영 영화 날짜 조회
+   * @description 관리자 상영 영화 날짜 조회
    * @param select_date 선택 날짜
    */
   @ApiOperation({
-    summary: '상영 영화 날짜 조회',
-    description: '상영 영화 날짜 조회',
+    summary: '관리자 상영 영화 날짜 조회',
+    description: '관리자 상영 영화 날짜 조회',
   })
   @ApiCreatedResponse({
     description: '성공여부',
@@ -71,11 +71,11 @@ export class ScreeningController {
     required: true,
     description: '선택날짜',
   })
-  @Get('/date_list')
+  @Get('/manager_date_list')
   @UseGuards(JwtAuthenticationGuard)
   @ApiBearerAuth()
   @UsePipes(ValidationPipe)
-  async getDateScreeningList(
+  async getManagerDateScreeningList(
     @Query('select_date') select_date: string,
     @Req() req: RequestWithAdmin,
     @Res() res: Response,
@@ -216,7 +216,7 @@ export class ScreeningController {
   }
 
   /**
-   * @description 상영영화 상세 조회
+   * @description 관리자 상영영화 상세 조회
    * @param screening_id 상영영화 고유 아이디
    */
   @ApiOperation({
@@ -296,6 +296,98 @@ export class ScreeningController {
   ) {
     return res.status(HttpStatus.OK).json({
       success: await this.screeningService.deleteScreening(screening_id),
+    });
+  }
+
+  /**
+   * @description 관리자 상영 영화 날짜 조회
+   * @param select_date 선택 날짜
+   */
+  @ApiOperation({
+    summary: '관리자 상영 영화 날짜 조회',
+    description: '관리자 상영 영화 날짜 조회',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+        data: {
+          id: '상영 영화 고유 아이디',
+          movie: '영화',
+          theater: '상영관',
+          kind: '종류',
+          start_time: '시작시간',
+          end_time: '종료시간',
+          ready_time: '준비시간',
+          created_at: '생성일',
+          updated_at: '수정일',
+        },
+      },
+    },
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'select_date',
+    required: true,
+    description: '선택날짜',
+  })
+  @Get('/date_list')
+  @UsePipes(ValidationPipe)
+  async getDateScreeningList(
+    @Query('select_date') select_date: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: await this.screeningService.getDateScreeningList(select_date),
+    });
+  }
+
+  /**
+   * @description 상영영화 좌석 조회
+   * @param screening_id 상영영화 고유 아이디
+   */
+  @ApiOperation({
+    summary: '상영영화 좌석 조회',
+    description: '상영영화 좌석 조회',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+        data: {
+          id: '영화 고유 아이디',
+          movie_id: '영화',
+          theater_id: '상영관',
+          kind: '종류',
+          start_time: '영화 가격',
+          end_time: '상영시간',
+          ready_time: '포스터 이미지',
+          created_at: '생성일',
+          updated_at: '수정일',
+        },
+      },
+    },
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'screening_id',
+    required: true,
+    description: '상영영화 고유 아이디',
+  })
+  @Get('/seat_list')
+  @UsePipes(ValidationPipe)
+  async getScreeningSeat(
+    @Query('screening_id') screening_id: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: await this.screeningService.getScreeningSeat(screening_id),
     });
   }
 }

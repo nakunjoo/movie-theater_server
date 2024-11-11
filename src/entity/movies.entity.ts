@@ -98,5 +98,5 @@ export class Movies extends BaseEntity {
   deletedAt?: Date | null;
 
   @OneToMany(() => Screening, (screening) => screening.movie_id)
-  screening: Screening;
+  screening: Screening[];
 }

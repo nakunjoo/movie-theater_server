@@ -21,7 +21,7 @@ export class MovieService {
   ) {}
 
   /**
-   * @description 관리자 영화 조회
+   * @description 영화 조회
    */
   async getMovieList() {
     try {
@@ -39,7 +39,7 @@ export class MovieService {
       return movies;
     } catch (error) {
       console.log('error:', error);
-      ErrorException(HttpStatus.NOT_FOUND, '관리자 영화 조회 실패', 404);
+      ErrorException(HttpStatus.NOT_FOUND, '영화 조회 실패', 404);
     }
   }
 
@@ -150,7 +150,6 @@ export class MovieService {
       });
 
       let img_url = movie?.img_url;
-      console.log(fs.existsSync(`${process.cwd()}/uploads/${movie.img_url}`));
 
       if (file) {
         const fileCheck = fs.existsSync(
