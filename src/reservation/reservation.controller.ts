@@ -252,4 +252,64 @@ export class ReservationController {
       success: await this.reservationService.cencelReservation(reservation_id),
     });
   }
+
+  /**
+   * @description 관리자 예매 날짜 조회
+   * @param start_date 시작일
+   * @param end_date 종료일
+   */
+  @ApiOperation({
+    summary: '관리자 예매 날짜 조회',
+    description: '관리자 예매 날짜 조회',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            id: '예약 고유 아이디',
+            screening_id: '상영 영화',
+            seat: '선택좌석',
+            status: '상태값',
+            amount: '예매수',
+            name: '예약자명',
+            phone: '예약자번호',
+            payment_price: '결제금액',
+            created_at: '생성일',
+            updated_at: '수정일',
+          },
+        ],
+      },
+    },
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'start_date',
+    required: true,
+    description: '시작일',
+  })
+  @ApiQuery({
+    type: 'string',
+    name: 'end_date',
+    required: true,
+    description: '종료일',
+  })
+  @Get('/manager_date_list')
+  @UsePipes(ValidationPipe)
+  async getReservationDateList(
+    @Query('start_date') start_date: string,
+    @Query('end_date') end_date: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: await this.reservationService.getReservationDateList(
+        start_date,
+        end_date,
+      ),
+    });
+  }
 }

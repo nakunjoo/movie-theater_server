@@ -3,8 +3,9 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ErrorException } from 'src/utils/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource, Not, Like } from 'typeorm';
+import { DataSource, Not, Like, Between } from 'typeorm';
 import * as fs from 'fs';
+import dayjs from 'src/utils/dayjs';
 
 // repository
 import { ReservationRepository } from 'src/repository/reservation.repository';
@@ -217,6 +218,39 @@ export class ReservationService {
       ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  /**
+   * @description 관리자 예매 날짜 조회
+   * @param start_date 시작일
+   * @param end_date 종료일
+   */
+  async getReservationDateList(start_date: string, end_date: string) {
+    try {
+      const reservations = await this.reservationRepository.find({
+        relations: [
+          'screening_id',
+          'screening_id.movie_id',
+          'screening_id.theater_id',
+        ],
+        where: {
+          createdAt: Between(
+            new Date(dayjs(start_date).tz().format('YYYY-MM-DD 00:00:00')),
+            new Date(dayjs(end_date).tz().format('YYYY-MM-DD 23:59:59')),
+          ),
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+      return reservations;
+    } catch (error) {
+      let error_text = '관리자 예매 날짜 조회';
+      if (error.response) {
+        error_text = error.response.error;
+      }
+      ErrorException(HttpStatus.BAD_REQUEST, error_text, 400);
     }
   }
 }
