@@ -300,12 +300,12 @@ export class ScreeningController {
   }
 
   /**
-   * @description 관리자 상영 영화 날짜 조회
+   * @description 상영 영화 날짜 조회
    * @param select_date 선택 날짜
    */
   @ApiOperation({
-    summary: '관리자 상영 영화 날짜 조회',
-    description: '관리자 상영 영화 날짜 조회',
+    summary: '상영 영화 날짜 조회',
+    description: '상영 영화 날짜 조회',
   })
   @ApiCreatedResponse({
     description: '성공여부',
