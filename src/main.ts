@@ -40,9 +40,9 @@ async function bootstrap() {
       disableErrorMessages: false,
     }),
   );
-  // if (process.env.NODE_ENV !== 'production') {
-  setupSwagger(app);
-  // }
+  if (process.env.NODE_ENV !== 'production') {
+    setupSwagger(app);
+  }
   const PORT = Number(process.env.PORT) || 3000;
 
   await app.listen(PORT);

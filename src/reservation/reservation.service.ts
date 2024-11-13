@@ -228,10 +228,6 @@ export class ReservationService {
    */
   async getReservationDateList(start_date: string, end_date: string) {
     try {
-      console.log(
-        'end_date:',
-        new Date(dayjs(end_date).tz().format('YYYY-MM-DD 23:59:59')),
-      );
       const reservations = await this.reservationRepository.find({
         relations: [
           'screening_id',
@@ -240,8 +236,8 @@ export class ReservationService {
         ],
         where: {
           createdAt: Between(
-            new Date(dayjs(start_date).tz().format('YYYY-MM-DD 00:00:00')),
-            new Date(dayjs(end_date).tz().format('YYYY-MM-DD 23:59:59')),
+            new Date(dayjs(start_date).format('YYYY-MM-DD 00:00:00')),
+            new Date(dayjs(end_date).format('YYYY-MM-DD 23:59:59')),
           ),
         },
         order: {
