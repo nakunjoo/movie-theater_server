@@ -297,6 +297,8 @@ export class ReservationController {
     description: '종료일',
   })
   @Get('/manager_date_list')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
   @UsePipes(ValidationPipe)
   async getReservationDateList(
     @Query('start_date') start_date: string,
@@ -310,6 +312,54 @@ export class ReservationController {
         start_date,
         end_date,
       ),
+    });
+  }
+
+  /**
+   * @description 관리자 예매 영화 조회
+   * @param reservation_id 예매 고유 아이디
+   */
+  @ApiOperation({
+    summary: '예매 영화 조회',
+    description: '예매 영화 조회',
+  })
+  @ApiCreatedResponse({
+    description: '성공여부',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            id: '상영관 고유 아이디',
+            name: '상영관 명',
+            type: '상영관 타입',
+            number_seats: '상영관 좌석수',
+            seats: '좌석',
+            created_at: '생성일',
+            updated_at: '수정일',
+          },
+        ],
+      },
+    },
+  })
+  @Get('/manager_detail')
+  @ApiQuery({
+    type: 'string',
+    name: 'reservation_id',
+    required: true,
+    description: '상영관 고유 아이디',
+  })
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
+  @UsePipes(ValidationPipe)
+  async getReservationManagerDetail(
+    @Query('reservation_id') reservation_id: string,
+    @Req() req: RequestWithAdmin,
+    @Res() res: Response,
+  ) {
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: await this.reservationService.getReservationDetail(reservation_id),
     });
   }
 }
