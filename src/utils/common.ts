@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as crypto from 'crypto';
 import dayjs from './dayjs';
+import * as fs from 'fs';
 
 const iv = crypto.randomBytes(16); //초기화 벡터. 더 강력한 암호화를 위해 사용. 랜덤값이 좋음
 const key = crypto.scryptSync('myprojectsSpecialKey', 'movieTheaterSalt', 32); // 나만의 암호화키. password, salt, byte 순인데 password와 salt는 본인이 원하는 문구로~
@@ -37,6 +38,25 @@ export const Decryption = async (data: string): Promise<string> => {
   } else {
     return null;
   }
+};
+
+export const ImageUplpad = async (file: Express.Multer.File, bucket: any) => {
+  const fileBuffer = fs.readFileSync(file.path);
+  let blob = bucket.file(file.filename);
+  blob.name = 'movies/' + blob.name;
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
+
+  blobStream.on('error', (err) => {
+    console.log(err);
+  });
+
+  blobStream.on('finish', () => {
+    console.log('finish');
+  });
+
+  blobStream.end(fileBuffer);
 };
 
 /**

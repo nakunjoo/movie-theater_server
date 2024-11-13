@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorException } from 'src/utils/common';
+import { ErrorException, ImageUplpad } from 'src/utils/common';
 import { DataSource, Not } from 'typeorm';
+import { Storage } from '@google-cloud/storage';
 import * as fs from 'fs';
 
 // entity
@@ -15,10 +16,21 @@ import { MovieUpdateDto } from './dto/movie_update.dto';
 
 @Injectable()
 export class MovieService {
+  private storage;
+  private bucket;
+  private url_path: string;
+
   constructor(
     private readonly movieRepository: MovieRepository,
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    this.storage = new Storage({
+      projectId: 'movie-theater',
+      keyFilename: 'src/configs/teak-banner-431004-n3-18f96eb6def8.json',
+    });
+    this.bucket = this.storage.bucket('teak-banner-431004-n3.appspot.com');
+    this.url_path = `https://storage.cloud.google.com/teak-banner-431004-n3.appspot.com/`;
+  }
 
   /**
    * @description 영화 조회
@@ -28,11 +40,7 @@ export class MovieService {
       const movies = await this.movieRepository.find({});
       if (movies.length > 0) {
         for (const movie of movies) {
-          const url = await fs.readFileSync(
-            `${process.cwd()}/uploads/${movie.img_url}`,
-            'base64',
-          );
-          movie.img_url = `data:image/jpeg;base64,${url}`;
+          movie.img_url = `${this.url_path}movies/${movie.img_url}`;
           movie.genre = JSON.parse(movie.genre);
         }
       }
@@ -60,6 +68,8 @@ export class MovieService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      await ImageUplpad(file, this.bucket);
+
       const create_movie = this.movieRepository.create({
         title: movie_info.title,
         genre: movie_info.genre,
@@ -104,11 +114,12 @@ export class MovieService {
       if (!movie) {
         ErrorException(HttpStatus.NOT_FOUND, '존재하지않는 영화입니다.', 404);
       }
-      const url = await fs.readFileSync(
-        `${process.cwd()}/uploads/${movie.img_url}`,
-        'base64',
-      );
-      movie.img_url = `data:image/jpeg;base64,${url}`;
+      // const url = await fs.readFileSync(
+      //   `${process.cwd()}/uploads/${movie.img_url}`,
+      //   'base64',
+      // );
+      // movie.img_url = `data:image/jpeg;base64,${url}`;
+      movie.img_url = `${this.url_path}movies/${movie.img_url}`;
       movie.genre = JSON.parse(movie.genre);
       return movie;
     } catch (error) {
@@ -152,12 +163,8 @@ export class MovieService {
       let img_url = movie?.img_url;
 
       if (file) {
-        const fileCheck = fs.existsSync(
-          `${process.cwd()}/uploads/${movie.img_url}`,
-        );
-        if (fileCheck) {
-          fs.unlinkSync(`${process.cwd()}/uploads/${movie.img_url}`);
-        }
+        await this.bucket.file(`movies/${movie.img_url}`).delete();
+        await ImageUplpad(file, this.bucket);
         img_url = file.filename;
       }
 
@@ -210,12 +217,7 @@ export class MovieService {
         },
       });
 
-      const fileCheck = fs.existsSync(
-        `${process.cwd()}/uploads/${movie.img_url}`,
-      );
-      if (fileCheck) {
-        fs.unlinkSync(`${process.cwd()}/uploads/${movie.img_url}`);
-      }
+      await this.bucket.file(`movies/${movie.img_url}`).delete();
       await queryRunner.manager.softDelete(Movies, { id: movie_id });
 
       // transaction 종료

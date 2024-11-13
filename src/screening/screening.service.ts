@@ -21,12 +21,15 @@ import { Reservation } from 'src/entity/reservation.entity';
 
 @Injectable()
 export class ScreeningService {
+  private url_path: string;
   constructor(
     private readonly screeningRepository: ScreeningRepository,
     private readonly movieRepository: MovieRepository,
     private readonly reservationRepository: ReservationRepository,
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    this.url_path = `https://storage.cloud.google.com/teak-banner-431004-n3.appspot.com/`;
+  }
 
   /**
    * @description 상영 영화 날짜 조회
@@ -214,11 +217,7 @@ export class ScreeningService {
         reservaion.seat = JSON.parse(reservaion.seat);
       }
       screening.reservation = reservaions;
-      const url = await fs.readFileSync(
-        `${process.cwd()}/uploads/${screening.movie_id.img_url}`,
-        'base64',
-      );
-      screening.movie_id.img_url = `data:image/jpeg;base64,${url}`;
+      screening.movie_id.img_url = `${this.url_path}movies/${screening.movie_id.img_url}`;
       screening.movie_id.genre = JSON.parse(screening.movie_id.genre);
       return screening;
     } catch (error) {

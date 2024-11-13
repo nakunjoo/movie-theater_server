@@ -18,10 +18,13 @@ import { Screening } from 'src/entity/screening.entity';
 
 @Injectable()
 export class ReservationService {
+  private url_path: string;
   constructor(
     private readonly dataSource: DataSource,
     private readonly reservationRepository: ReservationRepository,
-  ) {}
+  ) {
+    this.url_path = `https://storage.cloud.google.com/teak-banner-431004-n3.appspot.com/`;
+  }
 
   /**
    * @description 영화 예매 등록
@@ -135,11 +138,8 @@ export class ReservationService {
       if (!reservation) {
         ErrorException(HttpStatus.NOT_FOUND, '존재하지않는 예매입니다.', 404);
       }
-      const url = await fs.readFileSync(
-        `${process.cwd()}/uploads/${reservation.screening_id.movie_id.img_url}`,
-        'base64',
-      );
-      reservation.screening_id.movie_id.img_url = `data:image/jpeg;base64,${url}`;
+
+      reservation.screening_id.movie_id.img_url = `${this.url_path}movies/${reservation.screening_id.movie_id.img_url}`;
       reservation.seat = JSON.parse(reservation.seat);
       return reservation;
     } catch (error) {
